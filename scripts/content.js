@@ -7,7 +7,7 @@ const repoList = [
 console.log(`repoList: ${repoList.length}`)
 
 for (const repo of repoList) {
-  const link = repo.attributes.src.value
+  const link = repo.attributes.getNamedItem("src")?.value || ''
 
   fetch(link)
     .then(function (response) {
