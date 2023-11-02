@@ -1,7 +1,7 @@
 function getSelectMenuList() {
   return [
     ...document.querySelectorAll(
-      '#user-starred-repos div.starred details-menu.SelectMenu[role="menu"]'
+      'div.starred details-menu.SelectMenu[role="menu"]'
     ),
   ]
 }
@@ -59,22 +59,25 @@ function genButtom(tag, userId) {
   return a
 }
 
-const repoList = getSelectMenuList()
-console.log(`repoList: ${repoList.length}`)
-
-for (const repo of repoList) {
-  getTags(repo)
-    .then(({ tags, userId }) => {
-      return tags.map((tag) => genButtom(tag, userId))
-    })
-    .then((spans) => {
-      const starBtnGroup = repo.parentElement?.parentElement
-      if (starBtnGroup === null || starBtnGroup === undefined) {
-        return
-      }
-      const firstChild = starBtnGroup.firstElementChild;
-      spans.forEach(span => {
-        starBtnGroup.insertBefore(span, firstChild);
-      });
-    })
+function checkStarredRepos() {
+  const repoList = getSelectMenuList()
+  console.log(`repoList: ${repoList.length}`)
+  for (const repo of repoList) {
+    getTags(repo)
+      .then(({ tags, userId }) => {
+        return tags.map((tag) => genButtom(tag, userId))
+      })
+      .then((spans) => {
+        const starBtnGroup = repo.parentElement?.parentElement
+        if (starBtnGroup === null || starBtnGroup === undefined) {
+          return
+        }
+        const firstChild = starBtnGroup.firstElementChild;
+        spans.forEach(span => {
+          starBtnGroup.insertBefore(span, firstChild);
+        });
+      })
+  }
 }
+
+checkStarredRepos()
