@@ -1,7 +1,7 @@
 function getSelectMenuList() {
   return [
     ...document.querySelectorAll(
-      'div.starred details-menu.SelectMenu[role="menu"]'
+      'div:not(.unstarred) details-menu.SelectMenu[role="menu"]'
     ),
   ]
 }
@@ -42,42 +42,53 @@ function genButtom(tag, userId) {
   a.href = `/stars/${userId}/lists/${tag.replace(/ /g, "-")}`;
   a.classList.add("Button", "Button--secondary", "Button--small", "mr-1");
 
-  const innerSpan1 = document.createElement("span");
-  innerSpan1.classList.add("Button-content");
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("width", "24");
+  svg.setAttribute("height", "24");
+  svg.setAttribute("viewBox", "0 0 24 24");
+  svg.setAttribute("class", "octicon octicon-star-fill starred-button-icon d-inline-block");
 
-  const innerSpan2 = document.createElement("span");
-  innerSpan2.classList.add("Button-label");
+  const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  path.setAttribute("d", "M18.113 7.291h-6.279l-1.57-1.57H5.557c-.863 0-1.57.707-1.57 1.57v9.418c0 .863.707 1.57 1.57 1.57h12.557c.863 0 1.57-.707 1.57-1.57V8.86c0-.863-.707-1.57-1.57-1.57zm-1.617 8.633-2.307-1.35-2.307 1.35.612-2.613-2.033-1.758 2.676-.228 1.052-2.464 1.051 2.464 2.676.228-2.032 1.758.612 2.613z");
+  svg.appendChild(path);
+  a.appendChild(svg);
 
-  const innerSpan3 = document.createElement("span");
-  innerSpan3.classList.add("v-align-middle");
-  innerSpan3.textContent = tag;
+  const innerSpan = document.createElement("span");
+  innerSpan.textContent = tag;
 
-  innerSpan2.appendChild(innerSpan3);
-  innerSpan1.appendChild(innerSpan2);
-  a.appendChild(innerSpan1);
+  a.appendChild(innerSpan);
 
   return a
 }
 
 function checkStarredRepos() {
   const repoList = getSelectMenuList()
-  console.log(`repoList: ${repoList.length}`)
   for (const repo of repoList) {
     getTags(repo)
       .then(({ tags, userId }) => {
         return tags.map((tag) => genButtom(tag, userId))
       })
       .then((spans) => {
+        if (spans.length === 0) {
+          return
+        }
+
         const starBtnGroup = repo.parentElement?.parentElement
         if (starBtnGroup === null || starBtnGroup === undefined) {
           return
         }
         const firstChild = starBtnGroup.firstElementChild;
+        if (firstChild?.tagName === 'A') {
+          return
+        }
+
         spans.forEach(span => {
           starBtnGroup.insertBefore(span, firstChild);
         });
+      }).catch((err) => {
+        console.log(err)
       })
   }
 }
 
-checkStarredRepos()
+// checkStarredRepos()

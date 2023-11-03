@@ -9,6 +9,16 @@
         "192": "images/icon192.png",
         "512": "images/icon512.png"
     },
+    "permissions": [
+        "scripting",
+        "activeTab"
+    ],
+    "host_permissions": [
+        "https://github.com/*"
+    ],
+    "background": {
+        "service_worker": "scripts/background.js"
+    },
     "content_scripts": [
         {
             "matches": [
